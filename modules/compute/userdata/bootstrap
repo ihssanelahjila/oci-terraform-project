@@ -1,0 +1,54 @@
+#!/bin/bash
+# Script d'initialisation automatique pour instances OCI
+# Logging: /var/log/cloud-init-output.log
+
+set -euo pipefail  # Arrêt en cas d'erreur, mode sécurisé
+
+# 1. Configuration de base
+echo "=== Début du script bootstrap $(date) ==="
+
+# 2. Mise à jour du système
+export DEBIAN_FRONTEND=noninteractive
+apt-get update -y
+apt-get upgrade -y --with-new-pkgs
+apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    software-properties-common \
+    htop \
+    nginx \
+    unzip \
+    jq \
+    awscli
+
+# 3. Configuration NGINX (exemple)
+cat > /etc/nginx/sites-available/default <<NGINX_CONF
+server {
+    listen 80 default_server;
+    server_name _;
+    location / {
+        return 200 "Instance \${HOSTNAME} - OK";
+        add_header Content-Type text/plain;
+    }
+}
+NGINX_CONF
+
+# 4. Sécurité de base
+ufw allow 'Nginx HTTP'
+ufw --force enable
+
+# 5. Services
+systemctl enable nginx
+systemctl restart nginx
+
+# 6. Nettoyage
+apt-get autoremove -y
+apt-get clean
+
+# 7. Finalisation
+echo "=== Bootstrap terminé avec succès ==="
+echo "Date: $(date)"
+echo "Uptime: $(uptime)"
+echo "IP: $(hostname -I)"
