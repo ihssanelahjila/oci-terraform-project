@@ -218,7 +218,7 @@ variable "private_subnet_cidr" {
 variable "backend_port" {
   description = "Le port utilisé par le backend pour recevoir le trafic"
   type        = number
-  default     = 8080
+  default     = 80
 }
 
 
