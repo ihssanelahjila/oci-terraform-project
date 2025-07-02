@@ -132,9 +132,15 @@ variable "private_ingress_rules" {
       protocol = "6" # TCP
       source   = "10.0.0.0/16"
       port     = 22
+    },
+    http_from_lb = {
+      protocol = "6"
+      source   = "10.0.1.0/24"  # CIDR du subnet public (LB)
+      port     = 80
     }
   }
 }
+
 
 variable "private_egress_rules" {
   description = "Règles egress pour le subnet privé"
@@ -163,6 +169,7 @@ variable "security_list_ingress_security_rules_description" {
 variable "client_public_ip" {
   description = "Adresse IP publique du routeur client (CPE)"
   type        = string
+  default     = "203.0.113.1"  
 }
 
 variable "ipsec_static_routes" {
@@ -202,11 +209,10 @@ variable "lb_type" {
 }
 
 
-
 variable "public_subnet_cidr" {
   description = "CIDR du subnet public principal"
   type        = string
-  default     = "10.0.1.0/24"
+  default     = "10.0.0.0/24"
 }
 
 variable "private_subnet_cidr" {
@@ -227,5 +233,5 @@ variable "backend_port" {
 variable "availability_domain_2" {
   description = "Deuxième AD "
   type        = string
-  default     = ""
+  default     = "JBxW:EU-FRANKFURT-1-AD-2"
 }
